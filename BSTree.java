@@ -52,7 +52,7 @@ public class BSTree {
 	}
 	
 	
-	private BTNode searchNode(int value) {
+	BTNode searchNode(int value) {
 		BTNode cur = top;
 		while(cur != null) {
 			if(value > cur.value)
@@ -136,5 +136,79 @@ public class BSTree {
 		if(top == node) top = replacer;
 	}
 	
+	//
+	public void smallRightRotation() {
+		smallRightRotation(top);
+	}
+	
+	public BTNode smallRightRotation(BTNode node) {
+		if(node == null)
+			return null;
+		if(node.left == null)
+			return node;
+		
+		BTNode a = node;
+		BTNode b = node.left;
+		BTNode c = b.right;
+		
+		BTNode parent = node.parent;
+		
+		//top = b;
+		b.parent = parent;
+		if(parent != null) {
+			if(parent.left == node) 
+				parent.left = b;
+			else 
+				parent.right = b;
+		}
+		
+		b.right = a;
+		a.parent = b;
+		
+		a.left = c;
+		if(c != null)
+			c.parent = a;
+		
+		if(a == top) top = b;
+		
+		return b;
+	}
+	
+	public void smallLeftRotation() {
+		smallLeftRotation(top);
+	}
+	
+	public BTNode smallLeftRotation(BTNode node) {
+		if(node == null)
+			return null;
+		if(node.right == null)
+			return node;
+		
+		BTNode a = node;
+		BTNode b = node.right;
+		BTNode c = b.left;
+		
+		BTNode parent = node.parent;
+		
+		//top = b;
+		b.parent = parent;
+		if(parent != null) {
+			if(parent.left == node) 
+				parent.left = b;
+			else 
+				parent.right = b;
+		}
+		
+		b.left = a;
+		a.parent = b;
+		
+		a.right = c;
+		if(c != null)
+			c.parent = a;
+		
+		if(a == top) top = b;
+		
+		return b;
+	}
 	
 }

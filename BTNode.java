@@ -7,6 +7,8 @@ public class BTNode {
 	
 	int height;
 	
+	RBTNodeColor color;
+	
 	public BTNode() {
 		this(null);
 	}
@@ -16,6 +18,7 @@ public class BTNode {
 		left = null;
 		right = null;
 		height = 0;
+		color = RBTNodeColor.RED;
 	}
 	
 	static int getHeight(BTNode node) {
@@ -39,4 +42,21 @@ public class BTNode {
 	int balance() {
 		return getHeight(left) - getHeight(right);
 	}
+	
+	static boolean isBlack(BTNode node) {
+		if(node == null || node.color == RBTNodeColor.BLACK) 
+			return true;
+		return false;
+	}
+	
+	static boolean isRed(BTNode node) {
+		return !isBlack(node);
+	}
+	
+	
+}
+
+enum RBTNodeColor{
+	RED,
+	BLACK
 }

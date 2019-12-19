@@ -13,6 +13,7 @@ public class Program {
 		perfomanceTest();
 		test20();
 		//test30();
+		test40();
 	}
 	
 	void perfomanceTest() {
@@ -21,8 +22,8 @@ public class Program {
 		System.out.println("");
 		
 		System.out.println("BSTree");
-		System.out.println(";Заполнение в сл.порядке;;;;;;Заполнение в пор.возрастания;;;;;;");
-		System.out.println("N;insert;сбалансировано ли;search;search*;remove;сбалансировано ли;insert;сбалансировано ли;search;search*;remove;сбалансировано ли;");
+		System.out.println(";Заполнение в сл.порядке;;;;Заполнение в пор.возрастания;;;;");
+		System.out.println("N;insert;search;search*;remove;insert;search;search*;remove;");
 		
 		testSimpleBST(1_000);
 		testSimpleBST(10_000);
@@ -40,12 +41,25 @@ public class Program {
 		testAVLTree(1_000_000);
 		testAVLTree(10_000_000);
 		//testAVLTree(20_000_000);
+		
+		System.out.println("");
+		System.out.println("RBTree");
+		System.out.println(";Заполнение в сл.порядке;;;;;;Заполнение в пор.возрастания;;;;;;");
+		System.out.println("N;insert;является КЧ деревом;search;search*;remove;является КЧ деревом;insert;является КЧ деревом;search;search*;remove;является КЧ деревом;");
+		testRBTree(1_000);
+		testRBTree(10_000);
+		testRBTree(100_000);
+		testRBTree(1_000_000);
+		testRBTree(10_000_000);
+		
 	}
 	
 	void test20() {
 		System.out.println("");
 		System.out.println("Визуализация AVLTree:");
-		AVLTree tree = new AVLTree();
+		
+		BSTree tree = new AVLTree();
+		
 		tree.insert(10);
 		tree.insert(15);
 		tree.insert(8);
@@ -135,12 +149,34 @@ public class Program {
 		
 		*/
 		
+	}
+	
+	void test40() {
+		System.out.println("");
+		System.out.println("Визуализация RBTree:");
 		
+		BSTree tree = new RBTree();
 		
+		tree.insert(10);
+		tree.insert(15);
+		tree.insert(8);
+		tree.insert(4);
+		tree.insert(3);
+		tree.insert(6);
+		tree.insert(17);
+		tree.insert(14);
+		tree.insert(5);
+		tree.insert(7);
+		tree.insert(9);
 		
+		print(tree, true);
 		
+		System.out.println("Удаляем элемент 10. Результат:");
+		tree.remove(10);
+		print(tree, true);
 		
-		
+		visitIterative(tree.top);
+		//System.out.print(isBST(tree)?"yes;":"no;" );
 	}
 	
 	void testSimpleBST(int N){
@@ -149,6 +185,10 @@ public class Program {
 	
 	void testAVLTree(int N){
 		testBST(N, 2);
+	}
+	
+	void testRBTree(int N){
+		testBST(N, 3);
 	}
 	
 	
@@ -185,7 +225,7 @@ public class Program {
 		testBSTMethods(values, searchValues1, searchValues2, option);
 		
 		//ЭЛЕМЕНТЫ ПО ВОЗРАСТАНИЮ
-		if(N > 100_000 && option != 2)//для значений N > 100_000 тестирование заполнения дерева по возрастанию не проводим, т.к. долго выполняется
+		if(N > 100_000 && option == 1)//для значений N > 100_000 тестирование заполнения дерева по возрастанию не проводим, т.к. долго выполняется
 			System.out.print(";;;;;;");
 		else {
 			//заполняем	values по возрастанию, не перемешивая		
@@ -200,12 +240,21 @@ public class Program {
 	
 	void testBSTMethods(int[] values, int[] searchValues1, int[] searchValues2, int option) {
 		int N = values.length;
-		
 		BSTree tree ;
-		if(option == 2)
-			tree = new AVLTree();
-		else
-			tree = new BSTree();
+		switch(option) {
+			case 1:
+				tree = new BSTree();
+				break;
+			case 2:
+				tree = new AVLTree();
+				break;
+			case 3:
+				tree = new RBTree();
+				break;
+			default:
+				tree = null;
+				break;
+		}
 		
 		//System.out.println("Adding "+ N +"(N) random values to the tree");
 		Stopwatch sw = new Stopwatch();
@@ -220,7 +269,12 @@ public class Program {
 		System.out.print(sw.getDuration() + ";");
 		//System.out.print("isBST2:" + (isBST2(tree)?"yes;":"no;") );
 		//System.out.print("isBalanced:" + (isBalanced(tree, false)?"yes;":"no;") );
-		System.out.print( (isBalanced(tree, false)?"да;":"нет;") );
+		if(option == 2)
+			System.out.print( (isBalanced(tree, false)?"да;":"нет;") );
+		
+		if(option == 3)
+			System.out.print( (isRBTree(tree)?"да;":"нет;") );
+		
 		/*if(values.length <= 20) {
 			System.out.println("");
 			print(tree);
@@ -265,7 +319,11 @@ public class Program {
 		
 		//System.out.print("isBST2:" + (isBST2(tree)?"yes;":"no;") );
 		//System.out.print("isBalanced:" + (isBalanced(tree, false)?"yes;":"no;") );
-		System.out.print( (isBalanced(tree, false)?"да;":"нет;") );
+		if(option == 2)
+			System.out.print( (isBalanced(tree, false)?"да;":"нет;") );
+		
+		if(option == 3)
+			System.out.print( (isRBTree(tree)?"да;":"нет;") );
 		
 	}
 	
@@ -273,7 +331,11 @@ public class Program {
 	
 	
 	void print(BSTree tree) {
-		int width = 4;
+		print(tree, false);
+	}
+	
+	void print(BSTree tree, boolean showRBColor) {
+		int width = showRBColor? 7 : 4;
 		int totalLevels = getHeight(tree);
 		
 		System.out.println("-----");
@@ -295,7 +357,7 @@ public class Program {
 			for(int i = 0; i < elmCntInLevel; i++) {
 				
 				if(levelNodes[i] != null) { 
-					s += getNumStr(levelNodes[i].value, width);
+					s += getNodeStr(levelNodes[i], width, showRBColor);
 
 					newLevelNodes[i*2] = levelNodes[i].left;
 					newLevelNodes[i*2 + 1] = levelNodes[i].right;
@@ -356,6 +418,22 @@ public class Program {
 	
 	private String getNumStr(int n, int w) {
 		String s = Integer.toString(n);
+		int sLength = s.length();
+		if(sLength < w) {
+			int diff = w - sLength;
+			if(diff%2 != 0) {
+				s = s + " ";
+				diff--;
+			}
+			for(int i=0;i < diff;i+=2) {
+				s = " "+ s + " ";
+			}
+		}
+		return s;
+	}
+	
+	private String getNodeStr(BTNode node, int w, boolean showColor) {
+		String s = Integer.toString(node.value) + (showColor?(BTNode.isRed(node)?"(R)":"(B)") :"" );
 		int sLength = s.length();
 		if(sLength < w) {
 			int diff = w - sLength;
@@ -561,5 +639,87 @@ public class Program {
 			array[j] = buf;
 		}
 	}
+    
+    boolean isRBTree(BSTree tree) {
+    	
+    	//сначала проверяем "черные" высоты
+    	if(!checkBlackHeights(tree))
+    		return false;
+    	
+    	Stack<BTNode> stack = new Stack<BTNode>(); 
+        BTNode cur = tree.top;
+        
+        while (cur != null || !stack.isEmpty()){
+            if (!stack.isEmpty()){
+            	cur = stack.pop();
+            	
+            	//ОБРАБОТКА УЗЛА
+            	//System.out.println(cur.value);
+            	if(cur == tree.top && BTNode.isRed(cur)) 
+            		return false;
+            	
+            	if( BTNode.isRed(cur) && (BTNode.isRed(cur.left) || BTNode.isRed(cur.right)) )
+            		return false;
+            	
+            	//КОНЕЦ ОБРАБОТКИ УЗЛА
+            	
+                if ( cur.right != null) cur = cur.right;
+                else cur = null;
+            }
+            while (cur != null){
+                stack.push(cur);
+                cur = cur.left;
+            }
+        }
+    	return true;
+    }
+    
+    //
+    boolean checkBlackHeights(BSTree tree) {
+    	Stack<BTNode> stack = new Stack<BTNode>(); 
+        BTNode cur = tree.top;
+        
+        boolean wasHeight = false;
+        int firstHeight = 0;
+        
+        while (cur != null || !stack.isEmpty()){
+            if (!stack.isEmpty()){
+            	cur = stack.pop();
+            	
+            	//
+            	//System.out.println(cur.value);
+            	if(cur.left == null || cur.right == null) {//узел с 2 nil-листами или 1 nil-листом
+            		int blackHeight = 0;
+            		//идем вверх, считая черную высоту(nil-листы не считаем)
+            		BTNode cur2 = cur;
+            		while(cur2 != null) {
+            			if(BTNode.isBlack(cur2))
+            				blackHeight++;
+            			cur2 = cur2.parent;
+            		}
+            		if(!wasHeight) {
+            			firstHeight = blackHeight;
+            			wasHeight = true;
+            		}
+            		else {
+            			if(blackHeight != firstHeight)
+            				return false;
+            		}
+            	}
+            	
+            	//
+            	
+                if ( cur.right != null) cur = cur.right;
+                else cur = null;
+            }
+            while (cur != null){
+                stack.push(cur);
+                cur = cur.left;
+            }
+        }
+        return true;
+    }
+    
+    
     
 }

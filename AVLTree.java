@@ -1,5 +1,11 @@
 
 public class AVLTree extends BSTree {
+	public AVLTree() {
+		
+	}
+	public AVLTree(BTNode top) {
+		super(top);
+	}
 	
 	@Override
 	public BTNode insert(int x) {
@@ -111,84 +117,25 @@ public class AVLTree extends BSTree {
 		rebalanceFrom(startBalNode);
 	}
 	
-	public void smallRightRotation() {
-		smallRightRotation(top);
-	}
 	
+	@Override
 	public BTNode smallRightRotation(BTNode node) {
-		if(node == null)
-			return null;
-		if(node.left == null)
-			return node;
-		
-		BTNode a = node;
-		BTNode b = node.left;
-		BTNode c = b.right;
-		
-		BTNode parent = node.parent;
-		
-		//top = b;
-		b.parent = parent;
-		if(parent != null) {
-			if(parent.left == node) 
-				parent.left = b;
-			else 
-				parent.right = b;
+		BTNode res = super.smallRightRotation(node);
+		if(res != null && res.right != null) {
+			res.right.updateHeight();
+			res.updateHeight();
 		}
-		
-		b.right = a;
-		a.parent = b;
-		
-		a.left = c;
-		if(c != null)
-			c.parent = a;
-		
-		if(a == top) top = b;
-		
-		a.updateHeight();
-		b.updateHeight();
-		
-		return b;
+		return res;
 	}
 	
-	public void smallLeftRotation() {
-		smallLeftRotation(top);
-	}
-	
+	@Override
 	public BTNode smallLeftRotation(BTNode node) {
-		if(node == null)
-			return null;
-		if(node.right == null)
-			return node;
-		
-		BTNode a = node;
-		BTNode b = node.right;
-		BTNode c = b.left;
-		
-		BTNode parent = node.parent;
-		
-		//top = b;
-		b.parent = parent;
-		if(parent != null) {
-			if(parent.left == node) 
-				parent.left = b;
-			else 
-				parent.right = b;
+		BTNode res = super.smallLeftRotation(node);
+		if(res != null && res.left != null) {
+			res.left.updateHeight();
+			res.updateHeight();
 		}
-		
-		b.left = a;
-		a.parent = b;
-		
-		a.right = c;
-		if(c != null)
-			c.parent = a;
-		
-		if(a == top) top = b;
-		
-		a.updateHeight();
-		b.updateHeight();
-		
-		return b;
+		return res;
 	}
 	
 	public void bigRightRotation() {
@@ -235,5 +182,6 @@ public class AVLTree extends BSTree {
 		return c;
 		
 	}
+	
 	
 }
